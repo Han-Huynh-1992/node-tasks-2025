@@ -1,4 +1,4 @@
-* Node-Tasks is a project and task management web application built using Node.js, Express, AngularJS, and MySQL, and containerized with Docker for easy deployment. The application allows users to:
+* Node-Tasks is a project and task management web application built using Node.js, Express.js, AngularJS, and MySQL, and containerized with Docker for easy deployment. The application allows users to:
   + Register and log in securely
   + Create and manage Projects
   + Add and organize Tasks within projects
