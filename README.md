@@ -12,9 +12,9 @@
   4. Navigate to your browser  http://localhost:3000/  to view the app
  
 ### Application Flow
-  #### When the application starts, it automatically redirects users to the Login screen.
-  + If the user does not have an account, they can click on the "Register" link to create one.
-  + Once logged in, users are directed to the main dashboard.
+    #### When the application starts, it automatically redirects users to the Login screen.
+      + If the user does not have an account, they can click on the "Register" link to create one.
+      + Once logged in, users are directed to the main dashboard.
   #### From the dashboard:
   + Users can create new projects, update or delete them.
   + Inside each project, users can add tasks, assign them to users, and manage their status.
