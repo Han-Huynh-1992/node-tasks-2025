@@ -12,12 +12,12 @@
   4. Navigate to your browser  http://localhost:3000/  to view the app
  
 ### Application Flow
-  1. When the application starts, it automatically redirects users to the Login screen.
-  &emsp;- If the user does not have an account, they can click on the "Register" link to create one.
-  &emsp;- Once logged in, users are directed to the main dashboard.
+  ## When the application starts, it automatically redirects users to the Login screen.
+  + If the user does not have an account, they can click on the "Register" link to create one.
+  + Once logged in, users are directed to the main dashboard.
   2. From the dashboard:
-  &emsp;- Users can create new projects, update or delete them.
-  &emsp;- Inside each project, users can add tasks, assign them to users, and manage their status.
-  &emsp;- The UI allows easy interaction with forms for adding and editing both projects and tasks.
+  + Users can create new projects, update or delete them.
+  + Inside each project, users can add tasks, assign them to users, and manage their status.
+  + The UI allows easy interaction with forms for adding and editing both projects and tasks.
   3. To log out, users can click the Logout button, which clears the session and redirects to the login screen.
 
