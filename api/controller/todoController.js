@@ -1,67 +1,139 @@
-let toDos = require('../models/toDoModel');
-
-async function getToDos(res) {
-    try {
-        let records = await toDos.find();
-        res.json(records);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-}
+const Task = require('../models/taskModel');
+const User = require('../models/userModel');
+const Project = require('../models/projectModel');
 
 module.exports = function (app) {
-    app.get('/api/todos', (req, res) => {
-        getToDos(res);
-    });
-
-    app.get('/api/todo/:id', async (req, res) => {
-        const id = req.params.id;
+    // Get all tasks
+    app.get('/api/tasks', async (req, res) => {
         try {
-            let todo = await toDos.findById(id);
-            res.json(todo);
+            const tasks = await Task.findAll({
+                include: [
+                    { model: User, attributes: ['id', 'name'], required: true },
+                    { model: Project, attributes: ['id', 'name'], required: true }
+                ]
+            });
+            res.json(tasks);
         } catch (err) {
-            res.status(500).json(err);
+            res.status(500).json({ error: err.message });
         }
     });
 
-    app.post('/api/todo', async (req, res) => {
-        let newToDo = {
-            text: req.body.text,
-            isDone: req.body.isDone
-        };
-
+    // Get all projects
+    app.get('/api/projects', async (req, res) => {
         try {
-            await toDos.create(newToDo);
-            getToDos(res);
+            const projects = await Project.findAll({
+                include: [
+                    { model: User, attributes: ['id', 'name'], required: false },
+                ]
+            });
+            res.json(projects);
         } catch (err) {
-            res.status(500).json(err);
+            res.status(500).json({ error: err.message });
         }
     });
 
-    app.put('/api/todo', async (req, res) => {
-        if (!req.body._id) res.status(500).send("ID is required");
-
-        let todo = {
-            text: req.body.text,
-            isDone: req.body.isDone
-        };
+    // Add new project
+    app.post('/api/project', async (req, res) => {
+        const maxIdResult = await Project.max('id');
+        const newId = (maxIdResult || 0) + 1;
 
         try {
-            await toDos.updateOne({ _id: req.body._id }, todo);
-            getToDos(res);
+            const newProject = await Project.create({
+                id: newId,
+                name: req.body.name,
+                description: req.body.description,
+                created_date: new Date()
+            });
+            res.status(201).json(newProject);
         } catch (err) {
-            res.status(500).json(err);
+            res.status(500).json({ error: err.message });
         }
     });
 
-    app.delete('/api/todo/:id', async (req, res) => {
-        if (!req.params.id) res.status(500).send("ID is required");
 
+    // Update project
+    app.put('/api/project/:id', async (req, res) => {
         try {
-            await toDos.deleteOne({ _id: req.params.id });
-            getToDos(res);
+            const project = await Project.findByPk(req.params.id);
+            if (!project) return res.status(404).json({ message: 'Project not found' });
+
+            await project.update({
+                name: req.body.name ?? project.name,
+                description: req.body.description ?? project.description,
+                owner_id: req.body.owner_id ?? project.owner_id
+            });
+
+            res.json(project);
         } catch (err) {
-            res.status(500).json(err);
+            res.status(500).json({ error: err.message });
         }
     });
+
+    // Delete project
+    app.delete('/api/project/:id', async (req, res) => {
+        const projectId = req.params.id;
+
+        try {
+            // Delete all tasks related to project
+            await Task.destroy({
+                where: { project_id: projectId }
+            });
+
+            // Then, delete project
+            const deletedCount = await Project.destroy({
+                where: { id: projectId }
+            });
+
+            if (deletedCount === 0) {
+                return res.status(404).json({ message: 'Project not found' });
+            }
+
+            res.json({ message: 'Project and related tasks deleted successfully' });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    });
+
+
+    // Get all users
+    app.get('/api/users', async (req, res) => {
+        try {
+            const users = await User.findAll();
+            res.json(users);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    });
+
+    // Add new task
+    app.post('/api/task', async (req, res) => {
+        const maxIdResult = await Task.max('id');
+        const newId = (maxIdResult || 0) + 1;
+
+        try {
+            const newTask = await Task.create({
+                id: newId,
+                title: req.body.title,
+                description: req.body.description || '',
+                status: req.body.status || 'To Do',
+                priority: req.body.priority || 'Low',
+                due_date: req.body.due_date,
+                assignee_id: req.body.assignee_id,
+                project_id: req.body.project_id
+            });
+
+            // If project_id and assignee_id exist, update project owner
+            if (req.body.project_id && req.body.assignee_id) {
+                const project = await Project.findByPk(req.body.project_id);
+                if (project) {
+                    project.owner_id = req.body.assignee_id;
+                    await project.save();
+                }
+            }
+            res.status(201).json(newTask);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    });
+
 };

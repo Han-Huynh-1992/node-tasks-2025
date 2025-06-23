@@ -1,21 +1,24 @@
 services:
-  todo-app:
+  node-tasks:
     image: node:20-alpine
     command: sh -c "yarn install && node app.js"
     ports:
-      - 8080:3000
+      - 3000:3000
     working_dir: /app
     volumes:
       - ./:/app
     environment:
-      MONGO_URI: mongodb://mongoDB1:audition123@mongo:27017/todos
-  mongo:
-    image: mongo:6.0
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+      MYSQL_DB: test
+  mysql:
+    image: mysql:8.0
     volumes:
-      - todo-mongo-data:/var/lib/mongo
+      - todo-mysql-data:/var/lib/mysql
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoDB1
-      MONGO_INITDB_ROOT_PASSWORD: audition123
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: test
 
 volumes:
-  todo-mongo-data:
+  todo-mysql-data:
