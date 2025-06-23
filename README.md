@@ -1,17 +1,17 @@
-### ** Node-Tasks is a project and task management web application built using Node.js, Express.js, AngularJS, and MySQL, and containerized with Docker for easy deployment. The application allows users to: **
+### Node-Tasks is a project and task management web application built using Node.js, Express.js, AngularJS, and MySQL, and containerized with Docker for easy deployment. The application allows users to:
   + Register and log in securely
   + Create and manage Projects
   + Add and organize Tasks within projects
   + Assign tasks to team members
   + Track task status through stages like To Do, In Progress, Testing, and Done
 
-* How to run the app locally:
+### How to run the app locally:
   1. Install Docker Desktop
   2. Clone the repository on master branch
   3. To start the application, from the root directory of the project, run: "docker-compose up -d" command
   4. Navigate to your browser  http://localhost:3000/  to view the app
  
-* Application Flow
+### Application Flow
 1. When the application starts, it automatically redirects users to the Login screen.
    + If the user does not have an account, they can click on the "Register" link to create one.
    + Once logged in, users are directed to the main dashboard.
